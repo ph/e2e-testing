@@ -23,11 +23,13 @@ HELM_TAR_GZ_FILE="helm-v${HELM_VERSION}-linux-${GOARCH}.tar.gz"
 KIND_VERSION="v${KIND_VERSION:-"0.10.0"}"
 KUBERNETES_VERSION="${KUBERNETES_VERSION:-"1.18.2"}"
 
-HELM_CMD="${HOME}/bin/helm"
-KBC_CMD="${HOME}/bin/kubectl"
+HELM_CMD="/usr/local/bin/helm"
+KBC_CMD="/usr/local/bin/kubectl"
+KIND_CMD="/usr/local/bin/kind"
 
-# Install kind as a Go binary
-GOARCH=${GOARCH} GO111MODULE="on" go get sigs.k8s.io/kind@${KIND_VERSION}
+# Install kind
+curl -Lo ${KIND_CMD} https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-${GOARCH}
+chmod +x ${KIND_CMD}
 
 mkdir -p "${HOME}/bin" "${HOME}/.kube"
 touch "${HOME}/.kube/config"
