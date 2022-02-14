@@ -1,0 +1,5 @@
+summary: Unit Tests
+execute: |
+  cd ../..
+  eval "$(gvm $(cat .go-version))"
+  make unit-test
