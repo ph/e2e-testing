@@ -1,0 +1,59 @@
+project: "e2e-testing"
+prepare: |
+  echo "Preparing project..."
+restore: |
+  echo "Restoring project..."
+environment:
+  TOOLS_DOCKER_COMPOSE_VERSION: 1.29.2
+  TOOLS_GVM_VERSION: 0.3.2
+
+backends:
+  google:
+    key: $(HOST:echo $GOOGLE_JSON_FILENAME)
+    location: elastic-observability/europe-west1-b
+    systems:
+      - ubuntu-20.04
+    workers: 1
+    prepare: |
+      echo "Preparing Linux backends"
+      sudo apt-get update
+      sudo apt-get install -y build-essential
+      curl -fsSL https://get.docker.com -o get-docker.sh
+      sudo sh get-docker.sh
+
+      sudo curl -L "https://github.com/docker/compose/releases/download/v${TOOLS_DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      sudo chmod +x /usr/local/bin/docker-compose
+      sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+      export GO_VERSION=$(cat .go-version)
+      curl -sL -o /usr/local/bin/gvm "https://github.com/andrewkroh/gvm/releases/download/v${TOOLS_GVM_VERSION}/gvm-linux-amd64"
+      chmod +x /usr/local/bin/gvm
+      eval "$(gvm ${GO_VERSION})"
+      go version
+
+suites:
+  spread/:
+    summary: Project Tasks
+    prepare: |
+      echo "Preparing suite..."
+    prepare-each: |
+      echo "Preparing task..."
+    restore: |
+      echo "Restoring suite..."
+    restore-each: |
+      echo "Restoring task..."
+
+path: /home/test/src/github.com/elastic/e2e-testing
+include:
+  - "."
+exclude:
+  - .github
+  - notice
+  - "**/outputs"
+  - .backportrc.json
+  - .env
+  - .go-releaser.yml
+  - .mergify.yml
+  - .pre-commit-config.yml
+  - .*-sshhosts
+  - hosts
