@@ -1,0 +1,10 @@
+summary: Helm Tests
+environment:
+  SUITE: helm
+  TAGS/apmServer: apm-server
+  TAGS/filebeat: filebeat
+  TAGS/metricbeat: metricbeat
+execute: |
+  cd ../..
+  eval "$(gvm $(cat .go-version))"
+  /bin/bash .ci/scripts/functional-test.sh "${SUITE}" "${TAGS}"
